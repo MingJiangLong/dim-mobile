@@ -1,0 +1,16 @@
+.main-list-container{
+  background: white;
+  display: flex;
+  font-size: 1.7rem;
+  flex-direction: row;
+  padding: 1em;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+.container{
+  margin-top: 1.4em;
+}
+.image{
+  width: 1em;
+  height: 1em;
+}
