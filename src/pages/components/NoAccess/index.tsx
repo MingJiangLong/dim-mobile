@@ -8,7 +8,7 @@ export default function (props: Props) {
   return (
     <div className={styles["container"]}>
       <img
-        src={`${process.env.imagePathPrefix ?? ""}/nodata.png`}
+        src={`${process.env.imagePathPrefix ?? ""}/noaccess.png`}
         alt="..."
         className={styles["image"]}
       />
