@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react"
 import MainList from "../MainList"
 import NoAccess from "../NoAccess"
 import dd from "dingtalk-jsapi"
+import Empty from "../Empty"
+import axios from "axios"
 
 export default function () {
   function getCorpId() {
@@ -15,20 +17,12 @@ export default function () {
   }
 
   function postUserCode(code: string) {
-    return new Promise((s, e) => {
-      const xmlRequest = new XMLHttpRequest()
-      xmlRequest.onreadystatechange = function (ev) {
-        if (this.readyState == 4 && this.status == 200) {
-          s(xmlRequest.response)
-        } else {
-          e(e)
-        }
+    return axios.post("https://dim.uboxol.com/user/info", {
+      code,
+    },{
+      headers:{
+        "Content-Type":"application/json"
       }
-      xmlRequest.onerror = function (error) {
-        e()
-      }
-      xmlRequest.open("post", "https://dim.dev.uboxol.com/user/info")
-      xmlRequest.send(JSON.stringify({ code }))
     })
   }
 
@@ -55,25 +49,25 @@ export default function () {
       const code = await getDDCorpId()
       await postUserCode(code)
       const data = window?.data || {}
+      setHaveAccess(data?.code == 200)
       setMenuData(data)
     } catch (error) {}
   }
 
-  const [menusData, setMenuData] = useState<any>()
+  const [menusData, setMenuData] = useState<Menu>()
+
   const menuList = useMemo(() => {
     const data = menusData?.menu_list
     if (Array.isArray(data))
       return data.filter(
-        item => item?.type == 1 && !`${item.method}`.startsWith("/system")
+        item =>
+          item?.type == 1 && !`${item?.method ?? ""}`.startsWith("/system")
       )
     return []
   }, [menusData])
 
-  useEffect(() => {
-    // @ts-ignore
-    const data = window?.data || {}
-    setMenuData(data)
-  }, [])
+  const [haveAccess, setHaveAccess] = useState(false)
+
   useEffect(() => {
     getMenuData()
   }, [])
@@ -81,6 +75,8 @@ export default function () {
     <>
       {menuList.length ? (
         menuList.map((item, index) => <MainList {...item} key={index} />)
+      ) : haveAccess ? (
+        <Empty />
       ) : (
         <NoAccess />
       )}
