@@ -1,11 +1,11 @@
 import { useEffect } from "react"
 import List from "./components/List"
-import VConsole from "vconsole"
+// import VConsole from "vconsole"
 
 export default function Home() {
-  useEffect(()=>{
-    new VConsole()
-  },[])
+  // useEffect(()=>{
+  //   new VConsole()
+  // },[])
   return (
     <div
       style={{
@@ -18,14 +18,4 @@ export default function Home() {
       <List />
     </div>
   )
-}
-
-type MenuItem = {
-  name: string
-  id: number
-  method: string
-  type: number
-  status: number
-  page_url: string
-  child?: MenuItem[]
 }
