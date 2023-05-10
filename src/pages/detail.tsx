@@ -5,12 +5,10 @@ import React, { useEffect, useState } from "react"
  * @param props {DetailProps}
  */
 export default function Detail(props: DetailProps) {
-  const [url, setUrl] = useState()
+  const [url, setUrl] = useState('')
   useEffect(() => {
-    // @ts-ignore
     const tempt = window?.data?.page_url
     if (tempt) {
-      console.log(tempt)
       setUrl(tempt)
     } else {
       console.log("获取page_url失败", window)

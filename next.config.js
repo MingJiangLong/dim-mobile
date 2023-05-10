@@ -7,7 +7,6 @@ const nextConfig = {
   env: {
     imagePathPrefix: isProd ? '/dim-mobile' : ''//不可以用
   },
-
 }
 
 module.exports = nextConfig

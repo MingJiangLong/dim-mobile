@@ -1,11 +1,6 @@
-import { useEffect } from "react"
 import List from "./components/List"
-// import VConsole from "vconsole"
-
 export default function Home() {
-  // useEffect(()=>{
-  //   new VConsole()
-  // },[])
+
   return (
     <div
       style={{

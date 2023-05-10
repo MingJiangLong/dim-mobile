@@ -3,10 +3,9 @@ import MainList from "../MainList"
 import NoAccess from "../NoAccess"
 import dd from "dingtalk-jsapi"
 import Empty from "../Empty"
-import axios from "axios"
-
 export default function () {
   function getCorpId() {
+    return "dingd41f8f2af60aacb935c2f4657eb6378f"
     const pathParams = location.search.slice(1)
     return pathParams.split("&").reduce<{ [k: string]: string }>((a, b) => {
       const [k, v] = b.split("=")
@@ -17,12 +16,21 @@ export default function () {
   }
 
   function postUserCode(code: string) {
-    return axios.post("https://dim.uboxol.com/user/info", {
-      code,
-    },{
-      headers:{
-        "Content-Type":"application/json"
+    return new Promise((s, e) => {
+      const xmlRequest = new XMLHttpRequest()
+      xmlRequest.open("POST", "http://m-dim.dev.uboxol.com/user/info")
+      xmlRequest.setRequestHeader("Content-Type", "application/json")
+      xmlRequest.send(JSON.stringify({ code }))
+      xmlRequest.onreadystatechange = function () {
+        if (xmlRequest.readyState === 4 && xmlRequest.status == 200) {
+          s(true)
+        }
       }
+      xmlRequest.onerror = function () {
+        e(false)
+      }
+
+      xmlRequest.onprogress = function () {}
     })
   }
 
@@ -31,13 +39,10 @@ export default function () {
       dd.ready(async function () {
         try {
           let result = await dd.runtime.permission.requestAuthCode({
-            corpId: getCorpId(),
+            corpId: "dingd41f8f2af60aacb935c2f4657eb6378f",
           })
           s(result.code)
         } catch (error) {
-          dd.device.notification.alert({
-            message: `ERROR-${JSON.stringify(error)}`,
-          })
           e(error)
         }
       })
@@ -46,8 +51,8 @@ export default function () {
 
   async function getMenuData() {
     try {
-      const code = await getDDCorpId()
-      await postUserCode(code)
+      // const code = await getDDCorpId()
+      // await postUserCode(code)
       const data = window?.data || {}
       setHaveAccess(data?.code == 200)
       setMenuData(data)
@@ -68,18 +73,17 @@ export default function () {
 
   const [haveAccess, setHaveAccess] = useState(false)
 
+  const render = useMemo(() => {
+    return menuList.length ? (
+      menuList.map((item, index) => <MainList {...item} key={index} />)
+    ) : haveAccess ? (
+      <Empty />
+    ) : (
+      <NoAccess />
+    )
+  }, [menuList, haveAccess])
   useEffect(() => {
     getMenuData()
   }, [])
-  return (
-    <>
-      {menuList.length ? (
-        menuList.map((item, index) => <MainList {...item} key={index} />)
-      ) : haveAccess ? (
-        <Empty />
-      ) : (
-        <NoAccess />
-      )}
-    </>
-  )
+  return <>{render}</>
 }
